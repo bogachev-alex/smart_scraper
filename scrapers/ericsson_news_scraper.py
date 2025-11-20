@@ -1,6 +1,7 @@
 """
 LLM-based scraper for extracting structured data from Ericsson newsroom page.
 Extracts: title, date, link, description
+Renamed from ericsson_scraper.py to ericsson_news_scraper.py
 """
 
 import requests
@@ -11,6 +12,7 @@ import os
 import time
 import re
 from typing import List, Dict
+from pathlib import Path
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -21,7 +23,7 @@ from selenium.webdriver.support import expected_conditions as EC
 load_dotenv()
 
 
-class EricssonScraper:
+class EricssonNewsScraper:
     def __init__(self, api_key: str = None):
         """
         Initialize the scraper with OpenAI API key.
@@ -71,181 +73,86 @@ class EricssonScraper:
             # Use undetected-chromedriver which is designed to bypass bot detection
             print("Initializing browser (this may take a moment)...")
             options = uc.ChromeOptions()
-            options.add_argument('--start-maximized')
+            # Try without headless first - some sites block headless browsers
+            # options.add_argument('--headless')
             options.add_argument('--disable-blink-features=AutomationControlled')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--window-size=1920,1080')
+            options.add_argument('--start-maximized')
             
             driver = uc.Chrome(options=options, version_main=None)
             
-            print("Loading page (bypassing security checks)...")
+            print("Loading page...")
             driver.get(self.url)
             
-            # Wait for security check to complete
-            print("Waiting for security verification...")
-            time.sleep(8)  # Give time for any security checks to complete
+            # Initial wait for page to start loading
+            time.sleep(3)
             
-            # Check if we're on a security check page
-            page_source_lower = driver.page_source.lower()
-            security_keywords = ['imperva', 'incapsula', 'security check', 'additional security', 'verify you are human', 'cloudflare']
-            
-            if any(keyword in page_source_lower for keyword in security_keywords):
-                print("\n[WARNING] Security check detected!")
-                print("The page requires manual verification.")
-                print("A browser window should be open - please complete the security check manually.")
-                print("Waiting for you to complete the check (press Enter when done)...")
-                
-                # Keep browser open for manual interaction
-                input("Press Enter after completing the security check in the browser window...")
-                time.sleep(2)
-            
-            # Wait for actual content to load
+            # Wait for content to load with better detection
             print("Waiting for page content to load...")
-            max_wait = 30
+            max_wait = 20
             waited = 0
             while waited < max_wait:
                 page_source = driver.page_source
-                page_source_lower = page_source.lower()
+                page_length = len(page_source)
                 
-                # Check if we're past security checks
-                if not any(keyword in page_source_lower for keyword in security_keywords):
-                    # Check if we have actual content
-                    articles = driver.find_elements(By.TAG_NAME, "article")
-                    links = driver.find_elements(By.CSS_SELECTOR, "a[href*='newsroom'], a[href*='news'], a[href*='article']")
-                    main_content = driver.find_elements(By.TAG_NAME, "main")
-                    
-                    if len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(page_source) > 20000:
-                        print(f"[OK] Content loaded successfully!")
-                        break
+                # Check for specific Ericsson newsroom elements
+                news_list = driver.find_elements(By.CSS_SELECTOR, ".news-list, div.news-list")
+                cards = driver.find_elements(By.CSS_SELECTOR, ".card, div.card")
+                articles = driver.find_elements(By.TAG_NAME, "article")
+                links = driver.find_elements(By.CSS_SELECTOR, "a[href*='newsroom'], a[href*='/en/news/']")
+                main_content = driver.find_elements(By.TAG_NAME, "main")
+                
+                # Check if we have substantial content
+                has_content = (
+                    len(news_list) > 0 or 
+                    len(cards) > 0 or 
+                    len(articles) > 0 or 
+                    len(links) > 5 or 
+                    len(main_content) > 0 or 
+                    page_length > 50000  # Increased threshold
+                )
+                
+                if has_content:
+                    print(f"[OK] Content loaded successfully! ({page_length} chars, {len(cards)} cards, {len(links)} links)")
+                    break
+                
+                # If page is very small, it might be an error page
+                if page_length < 5000 and waited > 6:
+                    print(f"[WARNING] Page seems too small ({page_length} chars). May be an error page.")
+                    break
                 
                 time.sleep(2)
                 waited += 2
                 if waited % 4 == 0:
-                    print(f"  Still waiting... ({waited}s)")
-            
-            # Scroll to load lazy-loaded content
-            print("Scrolling page to load all content...")
-            try:
-                # First, look for "Load More" or "Show More" buttons and click them
-                load_more_attempts = 0
-                max_load_more_attempts = 10
-                while load_more_attempts < max_load_more_attempts:
-                    try:
-                        # Look for various "Load More" button patterns
-                        load_more_selectors = [
-                            "button:contains('Load More')",
-                            "button:contains('Show More')",
-                            "button:contains('More')",
-                            "a:contains('Load More')",
-                            "a:contains('Show More')",
-                            "[class*='load-more']",
-                            "[class*='show-more']",
-                            "[id*='load-more']",
-                            "[id*='show-more']"
-                        ]
-                        
-                        load_more_found = False
-                        for selector in load_more_selectors:
-                            try:
-                                # Try to find by text content
-                                if ':contains(' in selector:
-                                    # Use XPath for text matching
-                                    text = selector.split("'")[1]
-                                    xpath = f"//button[contains(text(), '{text}')] | //a[contains(text(), '{text}')]"
-                                    elements = driver.find_elements(By.XPATH, xpath)
-                                else:
-                                    elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                                
-                                for element in elements:
-                                    if element.is_displayed() and element.is_enabled():
-                                        print(f"  Found 'Load More' button, clicking...")
-                                        driver.execute_script("arguments[0].scrollIntoView(true);", element)
-                                        time.sleep(1)
-                                        element.click()
-                                        time.sleep(3)  # Wait for new content to load
-                                        load_more_found = True
-                                        break
-                            except:
-                                continue
-                        
-                        if not load_more_found:
-                            break
-                        
-                        load_more_attempts += 1
-                    except Exception as e:
-                        break
-                
-                # Scroll to bottom to trigger lazy loading
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
-                
-                # Scroll back up
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(1)
-                
-                # Scroll down gradually to trigger any lazy loading
-                scroll_pause_time = 1.5
-                last_height = driver.execute_script("return document.body.scrollHeight")
-                scroll_count = 0
-                max_scrolls = 10  # Increased from 5
-                
-                while scroll_count < max_scrolls:
-                    # Scroll down gradually
-                    current_scroll = 0
-                    scroll_increment = 500
-                    max_scroll = driver.execute_script("return document.body.scrollHeight")
-                    
-                    while current_scroll < max_scroll:
-                        driver.execute_script(f"window.scrollTo(0, {current_scroll});")
-                        time.sleep(0.5)
-                        current_scroll += scroll_increment
-                    
-                    # Scroll to bottom
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(scroll_pause_time)
-                    
-                    # Calculate new scroll height
-                    new_height = driver.execute_script("return document.body.scrollHeight")
-                    if new_height == last_height:
-                        # No new content, try one more time
-                        time.sleep(2)
-                        new_height = driver.execute_script("return document.body.scrollHeight")
-                        if new_height == last_height:
-                            break
-                    last_height = new_height
-                    scroll_count += 1
-                    print(f"  Scrolled {scroll_count}/{max_scrolls}, page height: {new_height}")
-                
-                # Scroll back to top
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(2)
-            except Exception as e:
-                print(f"  Note: Could not scroll (this is okay): {e}")
+                    print(f"  Still waiting... ({waited}s, {page_length} chars)")
             
             # Additional wait for JavaScript to fully render
-            time.sleep(4)
+            time.sleep(3)
             
             html = driver.page_source
+            current_url = driver.current_url
             print(f"Retrieved HTML: {len(html)} characters")
+            print(f"Current URL: {current_url}")
             
-            # Check if we're still on security page
-            if any(keyword in html.lower() for keyword in security_keywords):
-                print("[ERROR] Still on security check page. Please complete the security check manually.")
-                print("The browser window should still be open. Complete the check and press Enter...")
-                input("Press Enter after completing security check...")
-                time.sleep(5)  # Wait longer after manual check
-                html = driver.page_source
-                print(f"Retrieved HTML after manual check: {len(html)} characters")
-            
-            if len(html) < 10000:
-                print(f"[WARNING] Retrieved HTML seems too short ({len(html)} chars). The page might still be loading.")
-                print("Trying to wait a bit longer...")
-                time.sleep(5)
-                html = driver.page_source
-                print(f"Retrieved HTML after additional wait: {len(html)} characters")
+            # Verify we're on the correct page
+            if 'ericsson.com' not in current_url.lower():
+                print(f"[WARNING] May have been redirected. Expected Ericsson URL, got: {current_url}")
             
             # Try to find article links to verify we have content
             temp_soup = BeautifulSoup(html, 'html.parser')
             test_links = temp_soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['newsroom', 'news', 'article']))
-            print(f"[DEBUG] Found {len(test_links)} newsroom/news links in full HTML")
+            news_list_elem = temp_soup.find('div', class_='news-list')
+            cards_elem = temp_soup.find_all('div', class_='card')
+            print(f"[DEBUG] Found {len(test_links)} newsroom/news links, {len(cards_elem)} cards, news-list: {news_list_elem is not None}")
+            
+            if len(html) < 10000:
+                print(f"[WARNING] Retrieved HTML seems too short ({len(html)} chars). The page might not have loaded correctly.")
+                print(f"[DEBUG] Page title: {driver.title}")
+                # Check if it's an error page
+                if 'error' in html.lower() or '404' in html.lower() or 'not found' in html.lower():
+                    print("[ERROR] Page appears to be an error page!")
             
             return html
         except Exception as e:
@@ -258,6 +165,7 @@ class EricssonScraper:
     def extract_article_links(self, html: str) -> List[Dict]:
         """
         Extract article links using BeautifulSoup.
+        Specifically targets the press releases structure with class 'td_headlines' (similar to Nokia).
         
         Args:
             html: Raw HTML content
@@ -269,6 +177,240 @@ class EricssonScraper:
         articles = []
         seen_links = set()
         
+        # PRIMARY METHOD: Look for Ericsson news list structure
+        # Find the news-list container
+        news_list = soup.find('div', class_='news-list')
+        
+        if news_list:
+            # Find all cards directly within news-list (more reliable than finding rows)
+            cards = news_list.find_all('div', class_='card', recursive=True)
+            print(f"[DEBUG] Found {len(cards)} cards in news-list")
+            
+            # Process each card
+            for idx, card in enumerate(cards):
+                # Verify this card has a title link (to ensure it's an article card)
+                title_elem = card.find('h4', class_='card-title')
+                if not title_elem:
+                    continue
+                title_link = title_elem.find('a', href=True)
+                if not title_link:
+                    continue
+                
+                # Extract URL from title link (we already verified it exists)
+                href = title_link.get('href', '')
+                
+                # If no href from title, try to find image link in parent row
+                if not href:
+                    # Find parent row to look for image link
+                    parent_row = card.find_parent('div', class_='row')
+                    if parent_row:
+                        img_link = parent_row.find('a', href=True)
+                        if img_link:
+                            href = img_link.get('href', '')
+                
+                if not href:
+                    continue
+                
+                # Make URL absolute
+                if href.startswith('/'):
+                    full_url = f"https://www.ericsson.com{href}"
+                elif href.startswith('http'):
+                    full_url = href
+                else:
+                    continue
+                
+                # Avoid duplicates
+                if full_url in seen_links:
+                    continue
+                seen_links.add(full_url)
+                
+                # Extract title from h4.card-title > a (we already have title_link)
+                title = title_link.get_text(strip=True)
+                if not title or len(title) < 5:
+                    title = "N/A"
+                
+                # Extract date from p.card-description > span.date
+                date_text = "N/A"
+                date_author = card.find('p', class_='card-description')
+                if date_author:
+                    date_span = date_author.find('span', class_='date')
+                    if date_span:
+                        date_raw = date_span.get_text(strip=True)
+                        # Parse date like "Nov 10, 2025" or "Nov 10 2025"
+                        date_patterns = [
+                            r'(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{1,2}),?\s+(\d{4})',
+                            r'(\d{4})-(\d{2})-(\d{2})',
+                        ]
+                        for pattern in date_patterns:
+                            match = re.search(pattern, date_raw, re.IGNORECASE)
+                            if match:
+                                if len(match.groups()) == 3:
+                                    if match.group(1).isdigit():
+                                        # YYYY-MM-DD format
+                                        date_text = date_raw
+                                    else:
+                                        # Month Day, Year format
+                                        month = match.group(1)
+                                        day = match.group(2)
+                                        year = match.group(3)
+                                        month_map = {
+                                            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                                            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+                                            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12',
+                                            'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                                            'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                                            'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                                        }
+                                        month_num = month_map.get(month[:3], month)
+                                        if month_num.isdigit():
+                                            day_padded = day.zfill(2)
+                                            date_text = f"{year}-{month_num}-{day_padded}"
+                                        else:
+                                            date_text = date_raw
+                                break
+                        if date_text == "N/A":
+                            date_text = date_raw
+                
+                # Extract description from div.preamble-content
+                description = "N/A"
+                preamble = card.find('div', class_='preamble-content')
+                if preamble:
+                    desc_text = preamble.get_text(strip=True)
+                    if desc_text and len(desc_text) > 20:
+                        description = desc_text[:500]
+                
+                articles.append({
+                    'link': full_url,
+                    'title': title,
+                    'date': date_text,
+                    'description': description
+                })
+                
+                print(f"[DEBUG] Extracted article {idx+1}: {title[:50]}...")
+            
+            # If we found articles using the primary method, return them
+            if len(articles) > 0:
+                return articles
+        
+        # FALLBACK: Try Nokia-style structure (ppmodule_headlines) if Ericsson structure not found
+        container = soup.find('div', class_=lambda x: x and ('ppmodule_headlines' in str(x) or 'archive_item_container' in str(x) or 'div_headlines' in str(x)))
+        
+        if container:
+            # Find all article links within the container
+            article_links = container.find_all('a', class_='td_headlines')
+            print(f"[DEBUG] Found {len(article_links)} article links with class 'td_headlines' in container")
+            
+            # Process each article link (Nokia structure)
+            for idx, link in enumerate(article_links):
+                # Extract URL
+                href = link.get('href', '')
+                if not href:
+                    continue
+                
+                # Skip filter/search links
+                if '?h=' in href or '?t=' in href or '?match=' in href:
+                    continue
+                
+                # Make URL absolute
+                if href.startswith('/'):
+                    full_url = f"https://www.ericsson.com{href}"
+                elif href.startswith('http'):
+                    full_url = href
+                else:
+                    continue
+                
+                # Avoid duplicates
+                if full_url in seen_links:
+                    continue
+                seen_links.add(full_url)
+                
+                # Extract title - try multiple sources
+                title = "N/A"
+                
+                # 1. Try title attribute
+                title_attr = link.get('title', '')
+                if title_attr and len(title_attr) > 10:
+                    title = title_attr
+                
+                # 2. Try h3 inside pp_headline div
+                if title == "N/A" or len(title) < 10:
+                    headline_div = link.find('div', class_='pp_headline')
+                    if headline_div:
+                        h3 = headline_div.find('h3')
+                        if h3:
+                            title = h3.get_text(strip=True)
+                
+                # 3. Fallback to link text
+                if title == "N/A" or len(title) < 10:
+                    link_text = link.get_text(strip=True)
+                    if link_text and len(link_text) > 10:
+                        title = link_text
+                
+                # Extract date from pp_publishdate div
+                date_text = "N/A"
+                publishdate_div = link.find('div', class_='pp_publishdate')
+                
+                if publishdate_div:
+                    # Extract month, day, year
+                    month_elem = publishdate_div.find('div', class_='pp_date_month')
+                    day_elem = publishdate_div.find('div', class_='pp_date_day')
+                    year_elem = publishdate_div.find('div', class_='pp_date_year')
+                    
+                    month = month_elem.get_text(strip=True) if month_elem else ""
+                    day = day_elem.get_text(strip=True) if day_elem else ""
+                    year = year_elem.get_text(strip=True) if year_elem else ""
+                    
+                    # Clean day (remove comma if present)
+                    day = day.replace(',', '').strip()
+                    
+                    # Format date
+                    if month and day and year:
+                        # Try to format as YYYY-MM-DD
+                        month_map = {
+                            'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                            'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                            'September': '09', 'October': '10', 'November': '11', 'December': '12',
+                            'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                            'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+                            'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+                        }
+                        
+                        month_num = month_map.get(month, month)
+                        if month_num.isdigit():
+                            day_padded = day.zfill(2)
+                            date_text = f"{year}-{month_num}-{day_padded}"
+                        else:
+                            # Fallback to readable format
+                            date_text = f"{month} {day}, {year}"
+                    elif year:
+                        # At least we have the year
+                        date_text = year
+                
+                # Extract description
+                description = "N/A"
+                # Look for description in paragraph, summary, or excerpt elements
+                desc_elem = link.find_parent(['div', 'article', 'li', 'section'])
+                if desc_elem:
+                    desc_paragraphs = desc_elem.find_all(['p', 'div', 'span'], class_=lambda x: x and any(keyword in str(x).lower() for keyword in ['description', 'summary', 'excerpt', 'intro', 'lead']))
+                    if desc_paragraphs:
+                        desc_text = desc_paragraphs[0].get_text(strip=True)
+                        if desc_text and len(desc_text) > 20:
+                            description = desc_text[:500]
+                
+                articles.append({
+                    'link': full_url,
+                    'title': title,
+                    'date': date_text,
+                    'description': description
+                })
+                
+                print(f"[DEBUG] Extracted article {idx+1}: {title[:50]}...")
+            
+            # If we found articles using the fallback method, return them
+            if len(articles) > 0:
+                return articles
+        
+        # FALLBACK METHOD: Original extraction logic
         # Find all article elements or news containers
         article_elements = soup.find_all(['article', 'div'], class_=lambda x: x and any(keyword in str(x).lower() for keyword in ['article', 'news', 'item', 'card', 'post']))
         
@@ -495,6 +637,7 @@ class EricssonScraper:
         """
         Extract relevant HTML structure for LLM analysis.
         Uses BeautifulSoup to clean and extract meaningful content.
+        Prioritizes the ppmodule_headlines structure (like Nokia).
         
         Args:
             html: Raw HTML content
@@ -508,55 +651,68 @@ class EricssonScraper:
         for script in soup(["script", "style", "noscript"]):
             script.decompose()
         
-        # Try multiple strategies to find content
-        # Strategy 1: Look for common news/press content selectors
-        content_selectors = [
-            ('main', {}),
-            ('article', {}),
-            ('div', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'content', 'listing', 'newsroom'])}),
-            ('section', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'newsroom'])}),
-            ('ul', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'list'])}),
-        ]
-        
-        main_content = None
-        for tag, attrs in content_selectors:
-            main_content = soup.find(tag, attrs)
-            if main_content:
-                break
-        
-        # Strategy 2: Look for links that might be article links
-        if not main_content:
-            # Find all links and their parent containers
-            links = soup.find_all('a', href=True)
-            if links:
-                # Find common parent containers of links
-                for link in links[:20]:  # Check first 20 links
-                    href = link.get('href', '')
-                    text = link.get_text(strip=True)
-                    # If link looks like an article link and has text
-                    if text and len(text) > 10 and ('newsroom' in href.lower() or 'news' in href.lower() or 'article' in href.lower() or '/20' in href):
-                        parent = link.find_parent(['div', 'article', 'li', 'section'])
-                        if parent:
-                            main_content = parent.find_parent(['div', 'section', 'main'])
-                            if main_content:
-                                break
+        # Strategy 1: Look for Ericsson news-list structure (primary method)
+        main_content = soup.find('div', class_='news-list')
         
         if main_content:
-            # Extract text and links from main content
+            # Extract the container with all article links
             content_str = str(main_content)
         else:
-            # Fallback: extract all links and their context
-            body = soup.find('body')
-            if body:
-                # Get all links with their surrounding context
-                links_html = []
-                for link in body.find_all('a', href=True)[:50]:  # Limit to 50 links
-                    parent = link.find_parent(['div', 'li', 'article', 'section'])
-                    if parent:
-                        links_html.append(str(parent))
-                content_str = '\n'.join(links_html) if links_html else str(body)
+            # Strategy 1b: Try Nokia-style structure (ppmodule_headlines) as fallback
+            main_content = soup.find('div', class_=lambda x: x and ('ppmodule_headlines' in str(x) or 'archive_item_container' in str(x) or 'div_headlines' in str(x)))
+            
+            if main_content:
+                # Extract the container with all article links
+                content_str = str(main_content)
             else:
-                content_str = html
+                # Strategy 2: Look for common news/press content selectors
+                content_selectors = [
+                    ('main', {}),
+                    ('article', {}),
+                    ('div', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'content', 'listing', 'newsroom'])}),
+                    ('section', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'newsroom'])}),
+                    ('ul', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'article', 'list'])}),
+                ]
+                
+                main_content = None
+                for tag, attrs in content_selectors:
+                    main_content = soup.find(tag, attrs)
+                    if main_content:
+                        break
+                
+                # Strategy 3: Look for links that might be article links
+                if not main_content:
+                    # Find all links and their parent containers
+                    links = soup.find_all('a', href=True)
+                    if links:
+                        # Find common parent containers of links
+                        for link in links[:20]:  # Check first 20 links
+                            href = link.get('href', '')
+                            text = link.get_text(strip=True)
+                            # If link looks like an article link and has text
+                            if text and len(text) > 10 and ('newsroom' in href.lower() or 'news' in href.lower() or 'article' in href.lower() or '/20' in href):
+                                parent = link.find_parent(['div', 'article', 'li', 'section'])
+                                if parent:
+                                    main_content = parent.find_parent(['div', 'section', 'main'])
+                                    if main_content:
+                                        break
+                
+                if main_content:
+                    # Extract text and links from main content
+                    content_str = str(main_content)
+                else:
+                    # Fallback: extract all links and their context
+                    body = soup.find('body')
+                    if body:
+                        # Get all links with their surrounding context
+                        links_html = []
+                        for link in body.find_all('a', href=True)[:50]:  # Limit to 50 links
+                            parent = link.find_parent(['div', 'li', 'article', 'section'])
+                            if parent:
+                                links_html.append(str(parent))
+                        content_str = '\n'.join(links_html) if links_html else str(body)
+                    else:
+                        content_str = html
         
         # If we still don't have good content, try to get the entire body with all links
         if len(content_str) < 5000 or "incapsula" in content_str.lower() or "imperva" in content_str.lower() or "cloudflare" in content_str.lower():
@@ -732,9 +888,22 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         html = self.fetch_html()
         
         if debug:
-            with open("debug_ericsson_full_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+            script_dir = Path(__file__).parent
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+            
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+            
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_ericsson_news_full_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html)
-            print(f"[DEBUG] Full HTML saved to debug_ericsson_full_html.html ({len(html)} chars)")
+            print(f"[DEBUG] Full HTML saved to debug_ericsson_news_full_html.html ({len(html)} chars)")
         
         # First, try to extract article links directly
         print("Extracting article links directly from HTML...")
@@ -745,9 +914,22 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         html_structure = self.extract_html_structure(html)
         
         if debug:
-            with open("debug_ericsson_extracted_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+            script_dir = Path(__file__).parent
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+            
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+            
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_ericsson_news_extracted_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html_structure)
-            print(f"[DEBUG] Extracted HTML saved to debug_ericsson_extracted_html.html ({len(html_structure)} chars)")
+            print(f"[DEBUG] Extracted HTML saved to debug_ericsson_news_extracted_html.html ({len(html_structure)} chars)")
         
         # Count potential articles in HTML
         soup = BeautifulSoup(html_structure, 'html.parser')
@@ -818,32 +1000,68 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
             print(f"  Description: {article['description'][:100]}..." if len(article.get('description', '')) > 100 else f"  Description: {article.get('description', 'N/A')}")
             print("-" * 80)
     
-    def save_to_json(self, articles: List[Dict], filename: str = "ericsson_articles.json"):
+    def save_to_json(self, articles: List[Dict], filename: str = "ericsson_news.json"):
         """
-        Save results to JSON file.
+        Save results to JSON file in the data/ folder.
         
         Args:
             articles: List of article dictionaries
             filename: Output filename
         """
-        with open(filename, 'w', encoding='utf-8') as f:
+        # Determine project root (handle both root and scrapers/ subfolder)
+        script_dir = Path(__file__).parent
+        if script_dir.name == "scrapers":
+            project_root = script_dir.parent
+        else:
+            project_root = script_dir
+        
+        # Create data folder if it doesn't exist
+        data_dir = project_root / "data"
+        data_dir.mkdir(exist_ok=True)
+        
+        # Save to data folder
+        filepath = data_dir / filename
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(articles, f, indent=2, ensure_ascii=False)
-        print(f"\nResults saved to {filename}")
+        print(f"Results saved to {filepath}")
 
 
 def main():
     """Main entry point."""
     import sys
-    # API key from command line or environment
-    api_key = os.getenv("OPENAI_API_KEY") or (sys.argv[1] if len(sys.argv) > 1 else None)
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable must be set or provided as command line argument")
-    
-    # Check for debug flag
+    # Check for debug flag first (before parsing API key)
     debug = "--debug" in sys.argv or "-d" in sys.argv
     
+    # Filter out debug flags from arguments when looking for API key
+    args_without_flags = [arg for arg in sys.argv[1:] if arg not in ["--debug", "-d"]]
+    
+    # API key from environment variable first, then numbered keys, then command line
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    # If not found, try numbered keys (OPENAI_API_KEY_1, OPENAI_API_KEY_2, etc.)
+    if not api_key:
+        i = 1
+        while i <= 10:  # Check up to 10 numbered keys
+            api_key = os.getenv(f"OPENAI_API_KEY_{i}")
+            if api_key:
+                print(f"Using OPENAI_API_KEY_{i} from environment")
+                break
+            i += 1
+    
+    # If still not found, try command line argument
+    if not api_key and args_without_flags:
+        api_key = args_without_flags[0]
+    
+    if not api_key:
+        print("Error: OPENAI_API_KEY not found!")
+        print("Please either:")
+        print("  1. Set OPENAI_API_KEY or OPENAI_API_KEY_1 environment variable")
+        print("  2. Create a .env file with OPENAI_API_KEY=your_key_here")
+        print("  3. Provide it as a command line argument: python ericsson_news_scraper.py your_api_key")
+        return 1
+    
     try:
-        scraper = EricssonScraper(api_key=api_key)
+        scraper = EricssonNewsScraper(api_key=api_key)
         articles = scraper.scrape(debug=debug)
         scraper.display_results(articles)
         scraper.save_to_json(articles)

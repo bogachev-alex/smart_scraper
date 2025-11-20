@@ -1,6 +1,6 @@
 """
-LLM-based scraper for extracting structured data from Nokia newsroom page.
-Extracts: title, date, link
+LLM-based scraper for extracting structured data from Amdocs news-press page.
+Extracts: title, date, link, tags
 """
 
 import requests
@@ -11,6 +11,7 @@ import os
 import time
 import re
 from typing import List, Dict
+from pathlib import Path
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -20,8 +21,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # Load environment variables
 load_dotenv()
 
-
-class NokiaScraper:
+class AmdocsScraper:
     def __init__(self, api_key: str = None):
         """
         Initialize the scraper with OpenAI API key.
@@ -34,14 +34,14 @@ class NokiaScraper:
             raise ValueError("OpenAI API key is required. Provide it as argument or set OPENAI_API_KEY environment variable.")
         
         self.client = OpenAI(api_key=self.api_key)
-        self.url = "https://www.nokia.com/newsroom/?h=1&t=press%20releases&match=1"
+        self.url = "https://www.amdocs.com/news-press"
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
     
     def fetch_html(self, use_selenium: bool = True) -> str:
         """
-        Fetch HTML content from the Nokia newsroom page.
+        Fetch HTML content from the Amdocs news-press page.
         Uses Selenium to handle JavaScript-rendered content and bot protection.
         
         Args:
@@ -65,7 +65,7 @@ class NokiaScraper:
             raise Exception(f"Failed to fetch HTML: {str(e)}")
     
     def _fetch_html_selenium(self) -> str:
-        """Fetch HTML using undetected-chromedriver to bypass bot protection."""
+        """Fetch HTML using undetected-chromedriver to bypass Imperva/Incapsula protection."""
         driver = None
         try:
             # Use undetected-chromedriver which is designed to bypass bot detection
@@ -79,15 +79,37 @@ class NokiaScraper:
             print("Loading page (bypassing security checks)...")
             driver.get(self.url)
             
-            # Wait for security check to complete
-            print("Waiting for security verification...")
-            time.sleep(8)  # Give time for any security checks to complete
+            # Wait for page to load
+            print("Waiting for page to load...")
+            time.sleep(8)  # Give time for page to load
             
-            # Check if we're on a security check page
+            # Check if we're on a security check page (only if we don't have actual content)
             page_source_lower = driver.page_source.lower()
-            security_keywords = ['imperva', 'incapsula', 'security check', 'additional security', 'verify you are human', 'cloudflare']
+            security_keywords = ['imperva', 'incapsula', 'security check', 'additional security', 'verify you are human']
             
-            if any(keyword in page_source_lower for keyword in security_keywords):
+            # Check if we have actual content first
+            articles = driver.find_elements(By.TAG_NAME, "article")
+            links = driver.find_elements(By.CSS_SELECTOR, "a[href*='news'], a[href*='press'], a[href*='article']")
+            main_content = driver.find_elements(By.TAG_NAME, "main")
+            has_content = len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(driver.page_source) > 20000
+            
+            # Only trigger security check if we DON'T have content AND we see security keywords
+            # Also check for more specific security page indicators
+            security_page_indicators = [
+                'checking your browser',
+                'ddos protection',
+                'please wait while we verify',
+                'just a moment',
+                'you are being redirected'
+            ]
+            
+            is_security_page = (
+                not has_content and 
+                any(keyword in page_source_lower for keyword in security_keywords) and
+                any(indicator in page_source_lower for indicator in security_page_indicators)
+            )
+            
+            if is_security_page:
                 print("\n[WARNING] Security check detected!")
                 print("The page requires manual verification.")
                 print("A browser window should be open - please complete the security check manually.")
@@ -105,56 +127,19 @@ class NokiaScraper:
                 page_source = driver.page_source
                 page_source_lower = page_source.lower()
                 
-                # Check if we're past security checks
-                if not any(keyword in page_source_lower for keyword in security_keywords):
-                    # Check if we have actual content
-                    articles = driver.find_elements(By.TAG_NAME, "article")
-                    links = driver.find_elements(By.CSS_SELECTOR, "a[href*='newsroom'], a[href*='press'], a[href*='article']")
-                    main_content = driver.find_elements(By.TAG_NAME, "main")
-                    
-                    if len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(page_source) > 20000:
-                        print(f"[OK] Content loaded successfully!")
-                        break
+                # Check if we have actual content
+                articles = driver.find_elements(By.TAG_NAME, "article")
+                links = driver.find_elements(By.CSS_SELECTOR, "a[href*='news'], a[href*='press'], a[href*='article']")
+                main_content = driver.find_elements(By.TAG_NAME, "main")
+                
+                if len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(page_source) > 20000:
+                    print(f"[OK] Content loaded successfully!")
+                    break
                 
                 time.sleep(2)
                 waited += 2
                 if waited % 4 == 0:
                     print(f"  Still waiting... ({waited}s)")
-            
-            # Scroll to load lazy-loaded content
-            print("Scrolling page to load all content...")
-            try:
-                # Scroll to bottom to trigger lazy loading
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
-                
-                # Scroll back up
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(1)
-                
-                # Scroll down gradually to trigger any lazy loading
-                scroll_pause_time = 1
-                last_height = driver.execute_script("return document.body.scrollHeight")
-                scroll_count = 0
-                max_scrolls = 5
-                
-                while scroll_count < max_scrolls:
-                    # Scroll down
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(scroll_pause_time)
-                    
-                    # Calculate new scroll height
-                    new_height = driver.execute_script("return document.body.scrollHeight")
-                    if new_height == last_height:
-                        break
-                    last_height = new_height
-                    scroll_count += 1
-                
-                # Scroll back to top
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(2)
-            except Exception as e:
-                print(f"  Note: Could not scroll (this is okay): {e}")
             
             # Additional wait for JavaScript to fully render
             time.sleep(3)
@@ -162,8 +147,16 @@ class NokiaScraper:
             html = driver.page_source
             print(f"Retrieved HTML: {len(html)} characters")
             
-            # Check if we're still on security page
-            if any(keyword in html.lower() for keyword in security_keywords):
+            # Check if we're still on security page (only if we don't have content)
+            html_lower = html.lower()
+            has_content_final = len(html) > 20000 or any(kw in html_lower for kw in ['news-press', 'press release', 'article'])
+            is_still_security_page = (
+                not has_content_final and
+                any(keyword in html_lower for keyword in security_keywords) and
+                any(indicator in html_lower for indicator in security_page_indicators)
+            )
+            
+            if is_still_security_page:
                 print("[ERROR] Still on security check page. Please complete the security check manually.")
                 print("The browser window should still be open. Complete the check and press Enter...")
                 input("Press Enter after completing security check...")
@@ -180,8 +173,8 @@ class NokiaScraper:
             
             # Try to find article links to verify we have content
             temp_soup = BeautifulSoup(html, 'html.parser')
-            test_links = temp_soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['newsroom', 'press', 'news']))
-            print(f"[DEBUG] Found {len(test_links)} newsroom/press links in full HTML")
+            test_links = temp_soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['news', 'press']))
+            print(f"[DEBUG] Found {len(test_links)} news/press links in full HTML")
             
             return html
         except Exception as e:
@@ -193,41 +186,71 @@ class NokiaScraper:
     
     def extract_article_links(self, html: str) -> List[Dict]:
         """
-        Extract press release article links using BeautifulSoup.
+        Extract only Press Release article links using BeautifulSoup.
+        Targets the element with id="news_press" which contains all PR articles.
         
         Args:
             html: Raw HTML content
             
         Returns:
-            List of dictionaries with basic article info (link, title, date)
+            List of dictionaries with basic article info (link, title, date, tags)
         """
         soup = BeautifulSoup(html, 'html.parser')
         articles = []
         seen_links = set()
         
-        # Find all article elements or press release containers
-        article_elements = soup.find_all(['article', 'div'], class_=lambda x: x and any(keyword in str(x).lower() for keyword in ['article', 'press', 'release', 'news', 'item', 'card']))
+        # First, try to find the main container with id="news_press"
+        news_press_container = soup.find(id='news_press')
+        if not news_press_container:
+            # Fallback: look for article with id containing "news_press"
+            news_press_container = soup.find('article', id=re.compile(r'news_press', re.IGNORECASE))
         
-        # Also look for links that might be press release links
-        press_links = soup.find_all('a', href=lambda x: x and ('newsroom' in x.lower() or 'press' in x.lower() or 'release' in x.lower()))
+        if news_press_container:
+            print(f"[DEBUG] Found news_press container")
+            # Find all article elements within this container that have "Press release" label
+            press_release_articles = []
+            
+            # Find all articles within the news_press container
+            for article in news_press_container.find_all('article'):
+                # Check if this article has "Press release" label
+                has_press_release = False
+                marker = article.find(class_=re.compile(r'page-label-test|marker', re.IGNORECASE))
+                if marker and 'press release' in marker.get_text(strip=True).lower():
+                    has_press_release = True
+                else:
+                    # Also check if article text contains "Press release"
+                    if 'press release' in article.get_text().lower():
+                        has_press_release = True
+                
+                if has_press_release:
+                    press_release_articles.append(article)
+            
+            print(f"[DEBUG] Found {len(press_release_articles)} Press Release articles in news_press container")
+        else:
+            print("[DEBUG] news_press container not found, using fallback method...")
+            # Fallback: find all articles with "Press release" label
+            press_release_articles = []
+            for article in soup.find_all('article'):
+                marker = article.find(class_=re.compile(r'page-label-test|marker', re.IGNORECASE))
+                if marker and 'press release' in marker.get_text(strip=True).lower():
+                    press_release_articles.append(article)
         
-        print(f"[DEBUG] Found {len(article_elements)} potential article containers")
-        print(f"[DEBUG] Found {len(press_links)} potential press release links")
+        print(f"[DEBUG] Processing {len(press_release_articles)} Press Release articles")
         
-        # Process article elements
-        for idx, article in enumerate(article_elements[:50]):  # Limit to first 50 to avoid duplicates
-            # Find the main article link
+        # Extract data from each Press Release article
+        for idx, article in enumerate(press_release_articles):
+            # Find the main article link (usually the title link or image link)
             article_links = article.find_all('a', href=True)
             
-            # Find the link that points to the actual article
+            # Find the link that points to the actual article (not filter links)
             main_link = None
             for link in article_links:
                 href = link.get('href', '')
-                # Look for links to newsroom articles
-                if '/newsroom/' in href or '/press' in href.lower() or '/release' in href.lower():
-                    # Skip filter/search links
-                    if '?h=' in href or '?t=' in href or '?match=' in href:
-                        continue
+                # Skip filter links
+                if '?f[' in href or '?f%5B' in href:
+                    continue
+                # Look for links to /news-press/ or /press-release/
+                if '/news-press/' in href or '/press-release/' in href:
                     main_link = link
                     break
             
@@ -235,12 +258,12 @@ class NokiaScraper:
                 continue
             
             href = main_link.get('href', '')
-            if href in ['/newsroom', '/newsroom/']:
+            if href in ['/news-press', '/news-press/']:
                 continue
             
             # Make URL absolute
             if href.startswith('/'):
-                full_url = f"https://www.nokia.com{href}"
+                full_url = f"https://www.amdocs.com{href}"
             elif href.startswith('http'):
                 full_url = href
             else:
@@ -253,22 +276,22 @@ class NokiaScraper:
             
             # Extract title
             title = "N/A"
-            # Try to find title in h1, h2, h3, h4, h5 within the article
-            for heading in article.find_all(['h1', 'h2', 'h3', 'h4', 'h5']):
+            # Try to find title in h2, h3, h4, h5 within the article
+            for heading in article.find_all(['h2', 'h3', 'h4', 'h5']):
                 heading_text = heading.get_text(strip=True)
-                if heading_text and len(heading_text) > 10:
+                if heading_text and len(heading_text) > 15:
                     title = heading_text
                     break
             
             # If no heading found, use link text
-            if title == "N/A" or len(title) < 10:
+            if title == "N/A" or len(title) < 15:
                 link_text = main_link.get_text(strip=True)
-                if link_text and len(link_text) > 10:
+                if link_text and len(link_text) > 15:
                     title = link_text
                 else:
                     # Try title attribute
                     title_attr = main_link.get('title', '')
-                    if title_attr and len(title_attr) > 10:
+                    if title_attr and len(title_attr) > 15:
                         title = title_attr
             
             # Extract date
@@ -278,7 +301,6 @@ class NokiaScraper:
                 r'\b(\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4})\b',
                 r'\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4}\b',
                 r'\b\d{4}-\d{2}-\d{2}\b',
-                r'\b\d{1,2}/\d{1,2}/\d{4}\b',
             ]
             for pattern in date_patterns:
                 match = re.search(pattern, article_text, re.IGNORECASE)
@@ -286,20 +308,24 @@ class NokiaScraper:
                     date_text = match.group(1) if match.lastindex >= 1 else match.group(0)
                     break
             
-            # Also look for date in time elements or date-related classes
-            time_elem = article.find(['time', 'span', 'div'], class_=lambda x: x and any(keyword in str(x).lower() for keyword in ['date', 'time', 'published']))
-            if time_elem and date_text == "N/A":
-                time_text = time_elem.get_text(strip=True)
-                for pattern in date_patterns:
-                    match = re.search(pattern, time_text, re.IGNORECASE)
-                    if match:
-                        date_text = match.group(1) if match.lastindex >= 1 else match.group(0)
-                        break
+            # Extract tags
+            tags = []
+            # Look for tag links within the article
+            tag_links = article.find_all('a', href=re.compile(r'/taxonomy/term/|/insights\?f'))
+            for tag_link in tag_links:
+                tag_text = tag_link.get_text(strip=True)
+                if tag_text and tag_text.lower() not in ['press release', 'news'] and len(tag_text) < 50:
+                    if tag_text not in tags:
+                        tags.append(tag_text)
+            
+            if not tags:
+                tags = ['Press Release']
             
             articles.append({
                 'link': full_url,
                 'title': title,
-                'date': date_text
+                'date': date_text,
+                'tags': tags[:5]  # Limit to 5 tags
             })
             
             print(f"[DEBUG] Extracted article {idx+1}: {title[:50]}...")
@@ -328,8 +354,8 @@ class NokiaScraper:
         content_selectors = [
             ('main', {}),
             ('article', {}),
-            ('div', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'press', 'article', 'release', 'content', 'listing', 'newsroom'])}),
-            ('section', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'press', 'article', 'release', 'newsroom'])}),
+            ('div', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'press', 'article', 'release', 'content', 'listing'])}),
+            ('section', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'press', 'article', 'release'])}),
             ('ul', {'class': lambda x: x and any(keyword in str(x).lower() for keyword in ['news', 'press', 'article', 'list'])}),
         ]
         
@@ -349,7 +375,7 @@ class NokiaScraper:
                     href = link.get('href', '')
                     text = link.get_text(strip=True)
                     # If link looks like an article link and has text
-                    if text and len(text) > 10 and ('newsroom' in href.lower() or 'press' in href.lower() or 'release' in href.lower() or '/20' in href):
+                    if text and len(text) > 10 and ('news' in href.lower() or 'press' in href.lower() or 'article' in href.lower() or '/20' in href):
                         parent = link.find_parent(['div', 'article', 'li', 'section'])
                         if parent:
                             main_content = parent.find_parent(['div', 'section', 'main'])
@@ -374,7 +400,7 @@ class NokiaScraper:
                 content_str = html
         
         # If we still don't have good content, try to get the entire body with all links
-        if len(content_str) < 5000 or "incapsula" in content_str.lower() or "imperva" in content_str.lower() or "cloudflare" in content_str.lower():
+        if len(content_str) < 5000 or "incapsula" in content_str.lower() or "imperva" in content_str.lower():
             body = soup.find('body')
             if body:
                 # Get ALL links and their full context - be more aggressive
@@ -385,8 +411,8 @@ class NokiaScraper:
                     href = link.get('href', '').lower()
                     link_text = link.get_text(strip=True)
                     
-                    # Look for newsroom/press/article links
-                    if any(keyword in href for keyword in ['newsroom', 'press', 'release', 'article', '/20']) or \
+                    # Look for news/press/article links
+                    if any(keyword in href for keyword in ['news', 'press', 'article', '/20']) or \
                        (link_text and len(link_text) > 15):  # Long link text might be article titles
                         # Get parent with more context
                         parent = link.find_parent(['div', 'li', 'article', 'section', 'tr', 'td', 'p'])
@@ -412,6 +438,7 @@ class NokiaScraper:
                     content_str = str(body)
         
         # Limit content size to avoid token limits (keep first 150000 chars for better context)
+        # Increased limit to capture more articles
         if len(content_str) > 150000:
             content_str = content_str[:150000] + "..."
         
@@ -425,53 +452,58 @@ class NokiaScraper:
             html_content: HTML content to analyze
             
         Returns:
-            List of dictionaries with title, date, link
+            List of dictionaries with title, date, link, tags
         """
-        prompt = f"""You are analyzing HTML from Nokia newsroom page (https://www.nokia.com/newsroom/?h=1&t=press%20releases&match=1). Your task is to extract ALL press release articles from the page.
+        prompt = f"""You are analyzing HTML from https://www.amdocs.com/news-press page. Your task is to extract ONLY Press Release articles (items labeled as "Press release").
 
 CRITICAL INSTRUCTIONS:
-1. Extract ALL press release articles you can find on the page
-2. Each press release article should become a separate entry
-3. Do NOT extract filter links, navigation links, or category links
-4. Do NOT extract links with query parameters like ?h=, ?t=, ?match= (these are filter/search links)
-5. Extract ALL press release articles you can find (typically 10-50+ on a listing page)
+1. Extract ONLY items that are labeled as "Press release" - ignore other content types
+2. Look for containers/elements that have "Press release" text or label
+3. Each Press Release article card should become a separate entry
+4. Do NOT extract filter links (those with ?f[0]= or ?f%5B in URL)
+5. Do NOT extract navigation links, category links, or tag links
+6. Extract ALL Press Release articles you can find (typically 6-20+ on a listing page)
 
 What to look for:
-- Article cards/containers that contain press release content
-- Links within those containers that point to actual article pages (href containing "/newsroom/" with descriptive path)
-- Titles/headlines in headings (<h1>, <h2>, <h3>, <h4>) within press release containers
-- Dates in formats like "11 Nov 2025", "Nov 11, 2025", "2025-11-11", "11/11/2025", etc.
-- Skip any links with query parameters like ?h=, ?t=, ?match= (these are filter links, not articles)
+- Article cards/containers that contain "Press release" label or text
+- Links within those containers that point to actual article pages (href containing "/news-press/" with descriptive path)
+- Titles/headlines in headings (<h1>, <h2>, <h3>, <h4>) within Press Release containers
+- Dates in formats like "11 Nov 2025", "Nov 11, 2025", "2025-11-11", etc.
+- Tags/categories within the Press Release container (like "Corporate", "Earnings", "OSS", etc.)
+- Skip any links with query parameters like ?f[0]= (these are filter links, not articles)
 
-For EACH press release article you find, extract:
+For EACH article/press release you find, extract:
 - title: The headline or title (required - use link text if no explicit title)
 - date: Publication date (format as YYYY-MM-DD if possible, otherwise keep original format, use "N/A" if not found)
-- link: Full URL (if relative, prepend https://www.nokia.com. Use "N/A" only if absolutely no link exists)
+- link: Full URL (if relative, prepend https://www.amdocs.com. Use "N/A" only if absolutely no link exists)
+- tags: List of tags/categories like ["Press Release", "News", "Earnings", "Awards", "Partnership", etc.]. Can be empty [] if none found.
 
 EXAMPLES of what to extract:
-- Press releases with dates and titles
-- Articles from the newsroom with full URLs
+- Press releases labeled as "Press release" with dates
+- Press release articles with tags like "Corporate", "Earnings", "OSS", "GenAI", etc.
 
 EXAMPLES of what to SKIP:
-- Filter links (URLs with ?h=, ?t=, ?match=)
+- Filter links (URLs with ?f[0]= or ?f%5B)
 - Navigation links
 - Category/tag links
-- Links that just say "Press releases" (those are filters, not articles)
-- Links to /newsroom without a specific article path
+- Links that just say "Press release" (those are filters, not articles)
+- Links to /news-press without a specific article path
 
-Return a JSON array with ALL press release articles found.
+Return a JSON array with ALL Press Release articles found. Only include items that are clearly labeled as "Press release".
 
 JSON structure:
 [
   {{
     "title": "First Article Title",
     "date": "2025-11-11",
-    "link": "https://www.nokia.com/newsroom/article-1"
+    "link": "https://www.amdocs.com/news-press/article-1",
+    "tags": ["Press Release"]
   }},
   {{
     "title": "Second Article Title",
     "date": "2025-10-15",
-    "link": "https://www.nokia.com/newsroom/article-2"
+    "link": "https://www.amdocs.com/news-press/article-2",
+    "tags": ["News", "Partnership"]
   }}
   // ... continue for ALL articles found
 ]
@@ -485,7 +517,7 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",  # Using gpt-4o-mini for cost efficiency, can be changed to gpt-4 if needed
                 messages=[
-                    {"role": "system", "content": "You are a web scraping expert that extracts ALL articles from HTML. You MUST find every single press release article on the page. Return only valid JSON arrays with all articles found. Be extremely thorough - typical news listing pages have 10-50+ articles."},
+                    {"role": "system", "content": "You are a web scraping expert that extracts ALL articles from HTML. You MUST find every single article on the page. Return only valid JSON arrays with all articles found. Be extremely thorough - typical news listing pages have 10-50+ articles."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.1,
@@ -513,7 +545,8 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
                     structured_article = {
                         "title": article.get("title", "N/A"),
                         "date": article.get("date", "N/A"),
-                        "link": article.get("link", "N/A")
+                        "link": article.get("link", "N/A"),
+                        "tags": article.get("tags", []) if isinstance(article.get("tags"), list) else []
                     }
                     structured_articles.append(structured_article)
             
@@ -536,14 +569,29 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         Returns:
             List of structured article data
         """
-        print("Fetching HTML from Nokia newsroom page...")
+        print("Fetching HTML from Amdocs news-press page...")
         html = self.fetch_html()
         
         if debug:
-            with open("debug_nokia_full_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+
+            script_dir = Path(__file__).parent
+
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_full_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html)
-            print(f"[DEBUG] Full HTML saved to debug_nokia_full_html.html ({len(html)} chars)")
-        
+            print(f"[DEBUG] Full HTML saved to {debug_filepath} ({len(html)} chars)")
+
         # First, try to extract article links directly
         print("Extracting article links directly from HTML...")
         direct_articles = self.extract_article_links(html)
@@ -553,39 +601,57 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         html_structure = self.extract_html_structure(html)
         
         if debug:
-            with open("debug_nokia_extracted_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+
+            script_dir = Path(__file__).parent
+
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_extracted_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html_structure)
-            print(f"[DEBUG] Extracted HTML saved to debug_nokia_extracted_html.html ({len(html_structure)} chars)")
-        
+            print(f"[DEBUG] Extracted HTML saved to {debug_filepath} ({len(html_structure)} chars)")
+
         # Count potential articles in HTML
         soup = BeautifulSoup(html_structure, 'html.parser')
-        news_links = soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['newsroom', 'press', 'article']))
-        print(f"[DEBUG] Found {len(news_links)} potential newsroom/press links in extracted HTML")
+        news_links = soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['news', 'press', 'article']))
+        print(f"[DEBUG] Found {len(news_links)} potential news/press links in extracted HTML")
         
         print("Analyzing content with LLM to extract detailed information...")
         llm_articles = self.analyze_with_llm(html_structure)
         print(f"[DEBUG] LLM found {len(llm_articles)} articles")
         
-        # Combine results - prefer direct extraction, use LLM as supplement
+        # Combine results - prefer direct extraction (more accurate for filtering)
+        # Use direct extraction as primary, LLM as supplement
         articles = []
         direct_links = {art['link'] for art in direct_articles}
         
-        # Start with direct extraction results
+        # Start with direct extraction results (already filtered to Press Releases only)
         for art in direct_articles:
             articles.append({
                 'title': art['title'],
                 'date': art['date'],
-                'link': art['link']
+                'link': art['link'],
+                'tags': art.get('tags', ['Press Release'])
             })
         
         # Add any LLM results that weren't found by direct extraction
+        # (but only if they look like actual Press Release articles)
         for llm_art in llm_articles:
             llm_link = llm_art.get('link', '')
             # Only add if not already found and is a valid article link
-            if llm_link not in direct_links and '/newsroom/' in llm_link and '?h=' not in llm_link and '?t=' not in llm_link:
+            if llm_link not in direct_links and '/news-press/' in llm_link and '?f[' not in llm_link:
                 articles.append(llm_art)
         
-        print(f"Final result: {len(articles)} press release articles found")
+        print(f"Final result: {len(articles)} Press Release articles found")
         if len(direct_articles) > 0:
             print(f"  - {len(direct_articles)} from direct extraction")
         if len(articles) > len(direct_articles):
@@ -613,34 +679,70 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
             print(f"  Title: {article['title']}")
             print(f"  Date:  {article['date']}")
             print(f"  Link:  {article['link']}")
+            print(f"  Tags:  {', '.join(article['tags']) if article['tags'] else 'N/A'}")
             print("-" * 80)
     
-    def save_to_json(self, articles: List[Dict], filename: str = "nokia_articles.json"):
+    def save_to_json(self, articles: List[Dict], filename: str = "amdocs_news.json"):
         """
-        Save results to JSON file.
+        Save results to JSON file in the data/ folder.
         
         Args:
             articles: List of article dictionaries
             filename: Output filename
         """
-        with open(filename, 'w', encoding='utf-8') as f:
+        # Determine project root (handle both root and scrapers/ subfolder)
+        script_dir = Path(__file__).parent
+        if script_dir.name == "scrapers":
+            project_root = script_dir.parent
+        else:
+            project_root = script_dir
+        
+        # Create data folder if it doesn't exist
+        data_dir = project_root / "data"
+        data_dir.mkdir(exist_ok=True)
+        
+        # Save to data folder
+        filepath = data_dir / filename
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(articles, f, indent=2, ensure_ascii=False)
-        print(f"\nResults saved to {filename}")
-
+        print(f"Results saved to {filepath}")
 
 def main():
     """Main entry point."""
     import sys
-    # API key from command line or environment
-    api_key = os.getenv("OPENAI_API_KEY") or (sys.argv[1] if len(sys.argv) > 1 else None)
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable must be set or provided as command line argument")
-    
-    # Check for debug flag
+    # Check for debug flag first (before parsing API key)
     debug = "--debug" in sys.argv or "-d" in sys.argv
     
+    # Filter out debug flags from arguments when looking for API key
+    args_without_flags = [arg for arg in sys.argv[1:] if arg not in ["--debug", "-d"]]
+    
+    # API key from environment variable first, then numbered keys, then command line
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    # If not found, try numbered keys (OPENAI_API_KEY_1, OPENAI_API_KEY_2, etc.)
+    if not api_key:
+        i = 1
+        while i <= 10:  # Check up to 10 numbered keys
+            api_key = os.getenv(f"OPENAI_API_KEY_{i}")
+            if api_key:
+                print(f"Using OPENAI_API_KEY_{i} from environment")
+                break
+            i += 1
+    
+    # If still not found, try command line argument
+    if not api_key and args_without_flags:
+        api_key = args_without_flags[0]
+    
+    if not api_key:
+        print("Error: OPENAI_API_KEY not found!")
+        print("Please either:")
+        print("  1. Set OPENAI_API_KEY or OPENAI_API_KEY_1 environment variable")
+        print("  2. Create a .env file with OPENAI_API_KEY=your_key_here")
+        print("  3. Provide it as a command line argument: python amdocs_news_scraper.py your_api_key")
+        return 1
+    
     try:
-        scraper = NokiaScraper(api_key=api_key)
+        scraper = AmdocsScraper(api_key=api_key)
         articles = scraper.scrape(debug=debug)
         scraper.display_results(articles)
         scraper.save_to_json(articles)
@@ -651,7 +753,6 @@ def main():
         return 1
     
     return 0
-
 
 if __name__ == "__main__":
     exit(main())

@@ -11,6 +11,7 @@ import os
 import time
 import re
 from typing import List, Dict
+from pathlib import Path
 from dotenv import load_dotenv
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -19,7 +20,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # Load environment variables
 load_dotenv()
-
 
 class AmdocsScraper:
     def __init__(self, api_key: str = None):
@@ -79,15 +79,37 @@ class AmdocsScraper:
             print("Loading page (bypassing security checks)...")
             driver.get(self.url)
             
-            # Wait for security check to complete
-            print("Waiting for security verification...")
-            time.sleep(8)  # Give time for Imperva check to complete
+            # Wait for page to load
+            print("Waiting for page to load...")
+            time.sleep(8)  # Give time for page to load
             
-            # Check if we're on a security check page
+            # Check if we're on a security check page (only if we don't have actual content)
             page_source_lower = driver.page_source.lower()
             security_keywords = ['imperva', 'incapsula', 'security check', 'additional security', 'verify you are human']
             
-            if any(keyword in page_source_lower for keyword in security_keywords):
+            # Check if we have actual content first
+            articles = driver.find_elements(By.TAG_NAME, "article")
+            links = driver.find_elements(By.CSS_SELECTOR, "a[href*='news'], a[href*='press'], a[href*='article']")
+            main_content = driver.find_elements(By.TAG_NAME, "main")
+            has_content = len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(driver.page_source) > 20000
+            
+            # Only trigger security check if we DON'T have content AND we see security keywords
+            # Also check for more specific security page indicators
+            security_page_indicators = [
+                'checking your browser',
+                'ddos protection',
+                'please wait while we verify',
+                'just a moment',
+                'you are being redirected'
+            ]
+            
+            is_security_page = (
+                not has_content and 
+                any(keyword in page_source_lower for keyword in security_keywords) and
+                any(indicator in page_source_lower for indicator in security_page_indicators)
+            )
+            
+            if is_security_page:
                 print("\n[WARNING] Security check detected!")
                 print("The page requires manual verification.")
                 print("A browser window should be open - please complete the security check manually.")
@@ -105,56 +127,19 @@ class AmdocsScraper:
                 page_source = driver.page_source
                 page_source_lower = page_source.lower()
                 
-                # Check if we're past security checks
-                if not any(keyword in page_source_lower for keyword in security_keywords):
-                    # Check if we have actual content
-                    articles = driver.find_elements(By.TAG_NAME, "article")
-                    links = driver.find_elements(By.CSS_SELECTOR, "a[href*='news'], a[href*='press'], a[href*='article']")
-                    main_content = driver.find_elements(By.TAG_NAME, "main")
-                    
-                    if len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(page_source) > 20000:
-                        print(f"[OK] Content loaded successfully!")
-                        break
+                # Check if we have actual content
+                articles = driver.find_elements(By.TAG_NAME, "article")
+                links = driver.find_elements(By.CSS_SELECTOR, "a[href*='news'], a[href*='press'], a[href*='article']")
+                main_content = driver.find_elements(By.TAG_NAME, "main")
+                
+                if len(articles) > 0 or len(links) > 5 or len(main_content) > 0 or len(page_source) > 20000:
+                    print(f"[OK] Content loaded successfully!")
+                    break
                 
                 time.sleep(2)
                 waited += 2
                 if waited % 4 == 0:
                     print(f"  Still waiting... ({waited}s)")
-            
-            # Scroll to load lazy-loaded content
-            print("Scrolling page to load all content...")
-            try:
-                # Scroll to bottom to trigger lazy loading
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
-                
-                # Scroll back up
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(1)
-                
-                # Scroll down gradually to trigger any lazy loading
-                scroll_pause_time = 1
-                last_height = driver.execute_script("return document.body.scrollHeight")
-                scroll_count = 0
-                max_scrolls = 5
-                
-                while scroll_count < max_scrolls:
-                    # Scroll down
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(scroll_pause_time)
-                    
-                    # Calculate new scroll height
-                    new_height = driver.execute_script("return document.body.scrollHeight")
-                    if new_height == last_height:
-                        break
-                    last_height = new_height
-                    scroll_count += 1
-                
-                # Scroll back to top
-                driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(2)
-            except Exception as e:
-                print(f"  Note: Could not scroll (this is okay): {e}")
             
             # Additional wait for JavaScript to fully render
             time.sleep(3)
@@ -162,8 +147,16 @@ class AmdocsScraper:
             html = driver.page_source
             print(f"Retrieved HTML: {len(html)} characters")
             
-            # Check if we're still on security page
-            if any(keyword in html.lower() for keyword in security_keywords):
+            # Check if we're still on security page (only if we don't have content)
+            html_lower = html.lower()
+            has_content_final = len(html) > 20000 or any(kw in html_lower for kw in ['news-press', 'press release', 'article'])
+            is_still_security_page = (
+                not has_content_final and
+                any(keyword in html_lower for keyword in security_keywords) and
+                any(indicator in html_lower for indicator in security_page_indicators)
+            )
+            
+            if is_still_security_page:
                 print("[ERROR] Still on security check page. Please complete the security check manually.")
                 print("The browser window should still be open. Complete the check and press Enter...")
                 input("Press Enter after completing security check...")
@@ -580,10 +573,25 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         html = self.fetch_html()
         
         if debug:
-            with open("debug_full_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+
+            script_dir = Path(__file__).parent
+
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_full_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html)
-            print(f"[DEBUG] Full HTML saved to debug_full_html.html ({len(html)} chars)")
-        
+            print(f"[DEBUG] Full HTML saved to {debug_filepath} ({len(html)} chars)")
+
         # First, try to extract article links directly
         print("Extracting article links directly from HTML...")
         direct_articles = self.extract_article_links(html)
@@ -593,10 +601,25 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
         html_structure = self.extract_html_structure(html)
         
         if debug:
-            with open("debug_extracted_html.html", "w", encoding="utf-8") as f:
+            # Determine project root (handle both root and scrapers/ subfolder)
+
+            script_dir = Path(__file__).parent
+
+            if script_dir.name == "scrapers":
+                project_root = script_dir.parent
+            else:
+                project_root = script_dir
+
+            # Create debug folder if it doesn't exist
+            debug_dir = project_root / "debug"
+            debug_dir.mkdir(exist_ok=True)
+
+            # Save to debug folder
+            debug_filepath = debug_dir / "debug_extracted_html.html"
+            with open(debug_filepath, "w", encoding="utf-8") as f:
                 f.write(html_structure)
-            print(f"[DEBUG] Extracted HTML saved to debug_extracted_html.html ({len(html_structure)} chars)")
-        
+            print(f"[DEBUG] Extracted HTML saved to {debug_filepath} ({len(html_structure)} chars)")
+
         # Count potential articles in HTML
         soup = BeautifulSoup(html_structure, 'html.parser')
         news_links = soup.find_all('a', href=lambda x: x and any(kw in x.lower() for kw in ['news', 'press', 'article']))
@@ -659,29 +682,64 @@ Return ONLY valid JSON array. Extract EVERY article you can find. No explanation
             print(f"  Tags:  {', '.join(article['tags']) if article['tags'] else 'N/A'}")
             print("-" * 80)
     
-    def save_to_json(self, articles: List[Dict], filename: str = "amdocs_articles.json"):
+    def save_to_json(self, articles: List[Dict], filename: str = "amdocs_news.json"):
         """
-        Save results to JSON file.
+        Save results to JSON file in the data/ folder.
         
         Args:
             articles: List of article dictionaries
             filename: Output filename
         """
-        with open(filename, 'w', encoding='utf-8') as f:
+        # Determine project root (handle both root and scrapers/ subfolder)
+        script_dir = Path(__file__).parent
+        if script_dir.name == "scrapers":
+            project_root = script_dir.parent
+        else:
+            project_root = script_dir
+        
+        # Create data folder if it doesn't exist
+        data_dir = project_root / "data"
+        data_dir.mkdir(exist_ok=True)
+        
+        # Save to data folder
+        filepath = data_dir / filename
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(articles, f, indent=2, ensure_ascii=False)
-        print(f"\nResults saved to {filename}")
-
+        print(f"Results saved to {filepath}")
 
 def main():
     """Main entry point."""
     import sys
-    # API key from command line or environment
-    api_key = os.getenv("OPENAI_API_KEY") or (sys.argv[1] if len(sys.argv) > 1 else None)
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable must be set or provided as command line argument")
-    
-    # Check for debug flag
+    # Check for debug flag first (before parsing API key)
     debug = "--debug" in sys.argv or "-d" in sys.argv
+    
+    # Filter out debug flags from arguments when looking for API key
+    args_without_flags = [arg for arg in sys.argv[1:] if arg not in ["--debug", "-d"]]
+    
+    # API key from environment variable first, then numbered keys, then command line
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    # If not found, try numbered keys (OPENAI_API_KEY_1, OPENAI_API_KEY_2, etc.)
+    if not api_key:
+        i = 1
+        while i <= 10:  # Check up to 10 numbered keys
+            api_key = os.getenv(f"OPENAI_API_KEY_{i}")
+            if api_key:
+                print(f"Using OPENAI_API_KEY_{i} from environment")
+                break
+            i += 1
+    
+    # If still not found, try command line argument
+    if not api_key and args_without_flags:
+        api_key = args_without_flags[0]
+    
+    if not api_key:
+        print("Error: OPENAI_API_KEY not found!")
+        print("Please either:")
+        print("  1. Set OPENAI_API_KEY or OPENAI_API_KEY_1 environment variable")
+        print("  2. Create a .env file with OPENAI_API_KEY=your_key_here")
+        print("  3. Provide it as a command line argument: python amdocs_news_scraper.py your_api_key")
+        return 1
     
     try:
         scraper = AmdocsScraper(api_key=api_key)
@@ -695,7 +753,6 @@ def main():
         return 1
     
     return 0
-
 
 if __name__ == "__main__":
     exit(main())
