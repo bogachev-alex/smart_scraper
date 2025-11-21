@@ -15,8 +15,7 @@ dist/
 *.egg-info/
 
 # Output files
-*.json
-!package.json
+# JSON files are now tracked (removed *.json ignore rule)
 
 # IDE
 .vscode/

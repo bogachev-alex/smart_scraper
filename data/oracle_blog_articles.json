@@ -1,0 +1,802 @@
+[
+  {
+    "title": "Autonomous Recovery Service on Exadata Database Dedicated: OCI vs ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/autonomous-recovery-service-exadbd"
+  },
+  {
+    "title": "Alluxio on Oracle Cloud Infrastructure enables Scalable Throughput ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/alluxio-on-oci-submillisecond-latency-for-ai"
+  },
+  {
+    "title": "Performance Impact of Enabling Confidential Computing on Oracle Cloud ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/perf-impact-of-confidential-computing-on-oci-vms"
+  },
+  {
+    "title": "Introducing the New Fleet Application Management Release",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/introducing-the-new-fleet-application-management-release"
+  },
+  {
+    "title": "Simplifying Secure Access: OCI Bastion Connector",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oci-bastion-connector-private-access"
+  },
+  {
+    "title": "Milliseconds Matter: How BCC Group and OCI Are Redefining Market Data ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/milliseconds-matter-bcc-group-and-oci-vs-aws"
+  },
+  {
+    "title": "OCI Announcement: OpenSearch 3.2 is now available in OCI Search with ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oci-opensearch-32"
+  },
+  {
+    "title": "Seamless Employee Onboarding: From Oracle Fusion HCM to Simphony, ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/employee-onboarding-fusion-hcm-to-simphony"
+  },
+  {
+    "title": "Introducing AI Agent Marketplace",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/introducing-ai-agent-marketplace"
+  },
+  {
+    "title": "Apps update—AI agents, AI marketplace, and more",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/apps-2025-update-ai-agents-ai-marketplace-and-more"
+  },
+  {
+    "title": "AI Agent Studio provides new tools for automation",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/ai-agent-studio-provides-new-tools-for-automation"
+  },
+  {
+    "title": "25D roadmaps—new agents for ERP, HCM, SCM, CX",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/roadmaps"
+  },
+  {
+    "title": "Get started guide—design and build AI agent teams",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/get-started-guide-design-and-build-ai-agent-teams"
+  },
+  {
+    "title": "AI demo—see how AI can help you cut risk",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/ai-demo-see-how-ai-can-help-you-cut-risk"
+  },
+  {
+    "title": "See how (almost) anyone can build agents in Fusion Apps",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/see-how-almost-anyone-can-build-agents-in-fusion-apps"
+  },
+  {
+    "title": "Preview the hottest Fusion Apps AI and strategy updates",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/fusioninsider/preview-the-hottest-fusion-ai-and-strategy-updates"
+  },
+  {
+    "title": "Using RAG with AI Vector Search",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/using-rag-with-ai-vector-search"
+  },
+  {
+    "title": "DeweyVision Transforms Media Discovery with Oracle AI Vector Search: ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/deweyvision-transforms-media-discovery-with-oracle-ai-vector-search"
+  },
+  {
+    "title": "Oracle Autonomous AI Lakehouse",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/oracle-autonomous-ai-lakehouse-dbms-guru"
+  },
+  {
+    "title": "Oracle True Cache – AI World Round-Up + Get Hands On",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/oracle-true-cache-ai-world-roundup-get-hands-on"
+  },
+  {
+    "title": "Oracle TxEventQ and Apache Kafka Integration: Two Powerful Paths to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/oracle-txeventq-and-apache-kafka-integration-two-powerful-paths-to-modern-event-streaming"
+  },
+  {
+    "title": "Introducing Oracle AI Database 26ai: Next-Gen AI-Native Database for ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/oracle-announces-oracle-ai-database-26ai"
+  },
+  {
+    "title": "Industry Analysts Comment on Oracle AI Database News at AI World 2025",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/industry-analyst-quotes-on-oracle-ai-database-news-at-ai-world-2025"
+  },
+  {
+    "title": "Getting Started with Oracle AI Database AI Vector Search",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/database/getting-started-with-oracle-database-23ai-ai-vector-search"
+  },
+  {
+    "title": "Workday is not an ERP solution—and that’s an issue",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/workday-is-not-an-erp-solution-and-thats-an-issue"
+  },
+  {
+    "title": "3 reasons why EDM is the right solution for the right time",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/3-reasons-why-edm-is-the-right-solution-for-the-right-time"
+  },
+  {
+    "title": "Ready for the future? Oracle Cloud EPM is the smart alternative to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/ready-future-oracle-cloud-epm-smart-alternative-sap-bpc"
+  },
+  {
+    "title": "How Enterprise Data Management (EDM) can reduce finance’s ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/how-enterprise-data-management-edm-can-reduce-finances-reliance-on-it"
+  },
+  {
+    "title": "Exploring the benefits of replacing SAP BFC with Oracle Cloud EPM ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/ready-for-future-oracle-cloud-epm-smart-alternative-sap-bfc"
+  },
+  {
+    "title": "Shift your perspective: Turn your enterprise data into valuable ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/shift-perspective-turn-enterprise-data-into-valuable-products"
+  },
+  {
+    "title": "Oracle is a Continued Leader in Three Gartner Magic Quadrant Reports ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/oracle-continued-leader-three-gartner-magic-quadrant-reports-assessing-finance-capabilities"
+  },
+  {
+    "title": "How Cisco transformed FP&A with Oracle Cloud EPM: A strategic ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/modernfinance/cisco-transformed-fpa-oracle-cloud-epm-strategic-implementation-blueprint-finance-leaders"
+  },
+  {
+    "title": "The Power of Connection: Turning Effort into Reward at TriNet",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/the-power-of-connection-turning-effort-into-reward-at-trinet"
+  },
+  {
+    "title": "Introducing the Oracle B2C Service Cloud (RightNow) to Fusion Service ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/introducing-the-oracle-b2c-service-cloud-rightnow-to-fusion-service-transformation-program-powering-the-future-of-service-excellence"
+  },
+  {
+    "title": "The Age of AI-First Selling Has Arrived",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/the-age-of-ai-first-selling-has-arrived"
+  },
+  {
+    "title": "RightNow Road to Fusion: The Path to the Future of Customer Service",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/rightnow-road-to-fusion-the-path-to-the-future-of-customer-service"
+  },
+  {
+    "title": "Smarter Job Management: User-Defined Scheduling and Email ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/smarter-job-management-userdefined-scheduling-and-email-notifications-in-oracle-b2c-service"
+  },
+  {
+    "title": "Oracle Recognized as a Leader in the 2025 Gartner® Magic Quadrant™ ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/oracle-recognized-as-a-leader-in-the-2025-gartner-magic-quadrant-for-crm-customer-engagement-center"
+  },
+  {
+    "title": "Rethinking Enterprise Software: From UI to Agents",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/rethinking-enterprise-software-from-ui-to-agents"
+  },
+  {
+    "title": "Enhancing Customer Engagement with Personalized Outbound SMS from ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/cx/enhancing-customer-engagement-with-personalized-outbound-sms-from-oracle-b2c-service-via-oracle-responsyseloqua"
+  },
+  {
+    "title": "Database CI/CD with the Oracle Database Operator for Kubernetes, ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/database-cicd-with-the-oracle-database-operator-for-kubernetes-github-actions-and-liquibase-take-2"
+  },
+  {
+    "title": "Staying Compatible: Keeping Your OKE Clusters Up to Date with DevOps ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/staying-compatible-keeping-your-oke-clusters-up-to-date-with-devops-deploys-helm-client-upgrades"
+  },
+  {
+    "title": "Talking to Your ERP: NetSuite Meets Claude via MCP",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/talking-to-your-erp-netsuite-meets-claude-via-mcp"
+  },
+  {
+    "title": "Verifying GPU Accelerator Access Isolation in OCI Kubernetes Engine ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/verifying-gpu-accelerator-isolation-oci-kubernetes-engine-oke"
+  },
+  {
+    "title": "Autoscaling GPU Workloads with OCI Kubernetes Engine (OKE)",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/autoscaling-gpu-workloads-oci-kubernetes-engine-oke"
+  },
+  {
+    "title": "Building with AI at the Core: Oracle's Latest Innovations for ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/building-with-ai-at-the-core-oracles-latest-innovations-for-developers"
+  },
+  {
+    "title": "Setup External Objects and Integrations in Oracle Service Cloud for ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/service-cloud-create-xo"
+  },
+  {
+    "title": "Best Practices for AI Microservices, Containers, K8s, and Oracle ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/best-practices-for-ai-microservices-containers-k8s-and-oracle-database"
+  },
+  {
+    "title": "Alt Text: Best Practices & Evolving Concerns",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/alt-text-best-practices"
+  },
+  {
+    "title": "The Bridge to an Omnichannel Digital Marketing Future: 3 Foundational ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/the-bridge-to-an-omnichannel-digital-marketing-future"
+  },
+  {
+    "title": "Welcome Email Best Practices: Making a Great First Impression",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/welcome-email-best-practices-making-a-great-first-impression"
+  },
+  {
+    "title": "Using AI Subject Line & Copywriting Tools Successfully",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/using-ai-subject-line-and-copywriting-tools-successfully"
+  },
+  {
+    "title": "Key Lead Nurturing Campaigns by Industry",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/key-lead-nurturing-campaigns-by-industry"
+  },
+  {
+    "title": "The AI ROI Killer Lurking in Your Architecture: Data Access Charges",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/the-ai-roi-killer-lurking-in-your-architecture-data-access-charges"
+  },
+  {
+    "title": "Lead Nurture Campaigns Every B2B Brand Needs",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/6-examples-of-lead-nurturing-campaigns"
+  },
+  {
+    "title": "Why Your AI Solutions May Not Be Working as Expected",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/marketingcloud/why-your-ai-solutions-may-not-be-working-as-expected"
+  },
+  {
+    "title": "Quiz yourself: Serializing a primitive with ObjectOutputStream",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-quiz-serialize-primitive-value"
+  },
+  {
+    "title": "JCON World 2023: A virtual conference for Java developers",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-jcon-world-2023"
+  },
+  {
+    "title": "Java 21 is here: Virtual threads, string templates, and more",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-21-now-available"
+  },
+  {
+    "title": "Simplifying data access with MySQL and Jakarta Data",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/jakarta-data-mysql"
+  },
+  {
+    "title": "Virtual threads: Are futures a thing of the past?",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/virtual-threads-futures"
+  },
+  {
+    "title": "Quiz yourself: Deserializing objects that have a nonserializable ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-quiz-deserialization"
+  },
+  {
+    "title": "Quiz yourself: Deserializing objects with readObject",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-quiz-serialize-deserialize-readobject"
+  },
+  {
+    "title": "Quiz yourself: Collectors, comparators, and type inferencing in Java",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/javamagazine/java-quiz-collectors-comparators"
+  },
+  {
+    "title": "Wearables, IoMT and OCI: Building a Real-Time Health Workflow That ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/wearables-iomt-realtime-health-workflow-clinicians-trust"
+  },
+  {
+    "title": "Unlocking Enterprise Value: From Experimentation to Impact with OCI ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/oci-generative-ai-dac"
+  },
+  {
+    "title": "How Deep Tech Innovation-driven Businesses Can Leverage OCI’s VM ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/how-deep-tech-innovation-driven-businesses-can-leverage-ocis-vm-clusters-for-affordable-gpu-accelerated-computational-science-workloads"
+  },
+  {
+    "title": "Introducing the Open Agent Specification (Agent Spec): A Unified ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/introducing-open-agent-specification"
+  },
+  {
+    "title": "Running NIM on OKE: A Scalable Foundation for Enterprise-Grade LLM ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/running-nim-on-oke-for-llm-inference"
+  },
+  {
+    "title": "Announcing OCI Vision Streaming Video Analysis: Real-Time Insights ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/announcing-oci-vision-streaming-video-analysis"
+  },
+  {
+    "title": "Learning Never Stops for Top AI Talent – Join Oracle Race to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/learning-never-stops-for-top-ai-talent-race-to-certification"
+  },
+  {
+    "title": "Use OpenAI’s Open Weight Models in OCI Data Science’s No ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/ai-and-datascience/openais-open-weight-models-in-ai-quick-actions"
+  },
+  {
+    "title": "Oracle professionals thrive in Nashville (see how you can too)",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/oracle-professionals-thrive-in-nashville-see-how-you-can-too"
+  },
+  {
+    "title": "From Air Force to Oracle: Tachina’s mission to empower veterans ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/from-air-force-to-oracle-tachinas-mission-to-empower-veterans-in-tech"
+  },
+  {
+    "title": "Oracle Opportunities in Nashville: Building a Thriving Tech Career",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/oracle-opportunities-in-nashville-building-a-thriving-tech-career"
+  },
+  {
+    "title": "Oracle AI World 2025: Accelerating the AI Age",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/oracle-ai-world-2025-accelerating-the-ai-age"
+  },
+  {
+    "title": "Oracle in Nashville: A bright future for careers (and what we’re ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/we-are-hiring-in-nashville-scott-twaddle"
+  },
+  {
+    "title": "Breaking barriers, building dreams: Cosmo’s Oracle journey from ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/breaking-barriers-building-dreams-cosmos-oracle-journey-from-intern-to-pro"
+  },
+  {
+    "title": "AI in action at Oracle Health & Life Sciences Summit",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/ai-in-action-oracle-health-summit"
+  },
+  {
+    "title": "What employees love about working at Oracle",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/jobsatoracle/what-employees-love-about-working-at-oracle"
+  },
+  {
+    "title": "Oracle Analytics Cloud MCP Server: Bridging Enterprise Analytics and ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/oracle-analytics-cloud-mcp-server-bridging-enterprise-analytics-and-ai"
+  },
+  {
+    "title": "Enhancements to the Limit Values By Setting for Filters in Oracle ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/enhancements-to-the-limit-values-by-setting-for-filters-in-oracle-analytics"
+  },
+  {
+    "title": "Oracle Analytics Cloud November 2025 Update",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/oracle-analytics-cloud-november-2025-update"
+  },
+  {
+    "title": "Building materials specialists exploits data to get a grip on sales",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/building-materials-specialists-exploits-data-to-get-a-grip-on-sales"
+  },
+  {
+    "title": "How to Connect to Oracle Autonomous Database Private Endpoint from ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/how-to-connect-to-adb-private-endpoint-from-fdi"
+  },
+  {
+    "title": "Configuring a Vanity URL for Oracle Analytics Cloud in Oracle Fusion ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/configuring-vanity-url-for-oracle-analytics-cloud-in-fusion-data-intelligence-fdi"
+  },
+  {
+    "title": "A Look at Recent Updates to Salary Basis in Fusion HCM Analytics",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/enhance-compensation-insights-with-the-new-salary-basis-dimensions-kpis-and-subject-areas-in-fusion-hcm-analytics"
+  },
+  {
+    "title": "Oracle Analytics Cloud – Unlock Instant AI-Powered Insights ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/analytics/unlock-ai-powered-insights-from-oac-logs-via-sqlcl-mcp-server"
+  },
+  {
+    "title": "Transforming Workplace Safety: Oracle's Workforce Health and Safety ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/transforming-workplace-safety-oracles-workforce-health-and-safety-reporting-and-inspection-application"
+  },
+  {
+    "title": "Oracle’s global first payroll approach – simplifying global payroll ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracles-global-first-payroll-approach-simplifying-global-payroll-with-one-unified-solution"
+  },
+  {
+    "title": "Pay Transparency: Redefining Equity with Oracle Skills",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/pay-transparency-redefining-equity-with-oracle-skills"
+  },
+  {
+    "title": "Oracle Cloud HCM vs. Workday: 5 things to know",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracle-cloud-hcm-vs-workday-5-things-to-know"
+  },
+  {
+    "title": "Help achieve cost reductions with Oracle Workforce Health and Safety",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/help-achieve-cost-reductions-with-oracle-workforce-health-and-safety"
+  },
+  {
+    "title": "Coaching with Clarity: Changing the Game in Learning and Growth!",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/coaching-with-clarity-changing-the-game-in-learning-and-growth"
+  },
+  {
+    "title": "Modern HR leaders are driving innovation in finance",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/modern-hr-leaders-are-driving-innovation-in-finance"
+  },
+  {
+    "title": "HCM is the glue that holds manufacturing together",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/hcm-is-the-glue-that-holds-manufacturing-together"
+  },
+  {
+    "title": "OCI Carbon Emissions Analysis – Introducing more accurate power-based ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/oci-carbon-emissions-power-based-calculations"
+  },
+  {
+    "title": "Remembering Jon Chorley",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/remembering-jon-chorley"
+  },
+  {
+    "title": "Enhancing grid resilience with AI",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/enhancing-grid-resilience-with-ai"
+  },
+  {
+    "title": "AI for Good: How Oracle AI can help solve complex sustainability ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/ai-for-good-how-oracle-ai-can-help-solve-complex-sustainability-challenges"
+  },
+  {
+    "title": "Inspiring women in technology: Spotlight on Elena Avesani",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/inspiring-women-in-technology-spotlight-on-elena-avesani"
+  },
+  {
+    "title": "2025 ESG Regulatory Outlook: Resilience through Strategic Reporting ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/2025-esg-regulatory-outlook-resilience-through-strategic-reporting-and-risk-management"
+  },
+  {
+    "title": "Industry Series: The opportunities for financial institutions to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/industry-series-the-opportunities-for-financial-institutions-to-address-key-esg-challenges"
+  },
+  {
+    "title": "Introducing the 2024 Oracle Sustainability Champions",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/sustainability/introducing-the-2024-oracle-sustainability-champions"
+  },
+  {
+    "title": "CULTURE ACTIVATED: Father & Daughter Share Their Oracle Career ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/culture-activated-father-daughter-share-their-oracle-career-journeys"
+  },
+  {
+    "title": "Oracle JAPAC leaders share life and career lessons",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracle-japac-leaders-share-life-and-career-lessons"
+  },
+  {
+    "title": "Oracle Professional Asian Leadership: Oracle’s fastest-growing ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracle-professional-asian-leaders-opal-employee-resource"
+  },
+  {
+    "title": "CJ Perez: competitive sailing’s first Latina champion",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/cjperez-diversity-competitive-sailing-sailgp"
+  },
+  {
+    "title": "Three days, three hundred women: Oracle’s emerging leader summit in ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracle-women-leadership-summit-europe-2022"
+  },
+  {
+    "title": "Afro-Brazilian women live at a tricky intersection",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/afro-brazilian-women-oracle"
+  },
+  {
+    "title": "Oracle Career Relaunch expands to India, helps women reenter the ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/career-relaunch-india-women-workforce"
+  },
+  {
+    "title": "This is how Oracle leads in breaking gender bias",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/oracle-breaking-gender-bias"
+  },
+  {
+    "title": "Workday is not an ERP solution—and that’s an issue",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/workday-is-not-an-erp-solution-and-thats-an-issue"
+  },
+  {
+    "title": "5 supply chain management success factors every CPG company needs to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/5-supply-chain-management-success-factors-cpg-increased-profitability"
+  },
+  {
+    "title": "Why Technology Matters – A Strong Foundation",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/why-technology-matters-a-strong-foundation"
+  },
+  {
+    "title": "Extending Oracle Cloud Applications for Your Unique Needs",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/extending-oracle-cloud-applications-for-your-unique-needs"
+  },
+  {
+    "title": "Service – The Second “S” in SaaS!",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/service-the-second-s-in-saas"
+  },
+  {
+    "title": "Oracle Cloud Applications Technology Blog Series",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/oracle-cloud-applications-technology-matters"
+  },
+  {
+    "title": "How We Aim to Keep You Out of the News",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/how-we-aim-to-keep-you-out-of-the-news"
+  },
+  {
+    "title": "Oracle named a Leader in 2024 Gartner® Magic Quadrant™ for Warehouse ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/scm/oracle-leader-2024-gartner-magic-quadrant-warehouse-management-systems"
+  },
+  {
+    "title": "Walking with Nzeli: 35 years of conservation through the eyes of one ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/walking-with-nzeli-35-years-of-conservation-through-the-eyes-of-one-gorilla"
+  },
+  {
+    "title": "Local action, global difference: Oracle CloudWorld Tour brings ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/local-action-global-difference-oracle-cloudworld-tour-brings-purposedriven-volunteering-to-town"
+  },
+  {
+    "title": "On International Volunteer Day, Oracle Volunteers share how ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/on-international-volunteer-day-oracle-volunteers-share-how-connection-creates-impact"
+  },
+  {
+    "title": "Celebrating a year of service with Oracle Volunteers",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/celebrating-a-year-of-service-with-our-oracle-volunteers"
+  },
+  {
+    "title": "Oracle and d.tech: a philosophy of learning in action",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/oracle-and-dtech-a-philosophy-of-learning-in-action"
+  },
+  {
+    "title": "Earth Day 2024: Plastics vs. the Planet with Colleen Cassity, Vice ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/earth-day-2024-plastics-vs-the-planet-with-colleen-cassity-vice-president-of-oracle-social-impact"
+  },
+  {
+    "title": "Oracle Social Impact and the positive feedback loop of caring for ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/at-oracle-social-impact-we-know-that-caring-for-one-another-helps-care-for-the-world"
+  },
+  {
+    "title": "Building a water resilient future through our philanthropy",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/socialimpact/building-a-water-resilient-future-through-our-philanthropy"
+  },
+  {
+    "title": "Why Oracle Guided Learning (OGL) remains essential with the new Ask ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/why-oracle-guided-learning-ogl-remains-essential-with-the-new-ask-oracle-home-page"
+  },
+  {
+    "title": "Oracle’s Race to Certification 2025: Empowering a New Era of Tech ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/oracles-race-to-certification-2025-empowering-a-new-era-of-tech-talent"
+  },
+  {
+    "title": "Now Available: Oracle Database@AWS Architect Professional Course and ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/database-aws-architect-professional-certification-course"
+  },
+  {
+    "title": "AI Assist is now available in Oracle Cloud Success Navigator for ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/ai-assist-now-available-success-navigator-fusion-applications"
+  },
+  {
+    "title": "Prepare, Deploy and Succeed with AI Adoption",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/prepare-deploy-and-succeed-with-ai-adoption"
+  },
+  {
+    "title": "The hidden cost of training friction in JDE and PeopleSoft—and how to ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/the-hidden-cost-of-training-friction-in-jde-and-peoplesoftand-how-to-fix-it"
+  },
+  {
+    "title": "Guide Activation, Reimagined: let user actions lead the way",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/guide-activation-reimagined-let-user-actions-lead-the-way"
+  },
+  {
+    "title": "Ready to Lead in Enterprise AI?",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/oracleuniversity/ready-to-lead-in-enterprise-ai"
+  },
+  {
+    "title": "Oracle Academy Tech Chat podcast explores pathways into tech with ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-tech-chat-podcast-explores-pathways-into-tech-with-cloud-engineering"
+  },
+  {
+    "title": "Tech Chat podcast covers Oracle APEX in the real world",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/tech-chat-podcast-covers-oracle-apex-in-the-real-world"
+  },
+  {
+    "title": "Oracle Academy North America inspires educators and the next ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-north-america-inspires-educators-and-the-next-generation-of-developers-with-webinar-on-java-for-ap-computer-science-a-course"
+  },
+  {
+    "title": "Oracle Academy Industry Visit Faculty Day at Oracle Indonesia office ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-industry-visit-faculty-day-at-oracle-indonesia-office-empowers-diponegoro-university-undip-educators-and-students"
+  },
+  {
+    "title": "Educators in the UK connect with Oracle Java leaders at faculty ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/educators-in-the-uk-connect-with-oracle-java-leaders-at-faculty-roundtable"
+  },
+  {
+    "title": "Oracle Academy outlines the multidisciplinary benefits of AI and ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-outlines-the-multidisciplinary-benefits-of-ai-and-importance-of-shaping-the-future-at-manigreen-conference-hosted-by-the-university-of-arkansas-rome"
+  },
+  {
+    "title": "Oracle Academy attends “ManiGreen” press conference launch as a ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-attends-manigreen-press-conference-launch-as-a-silver-sponsor-hosted-by-the-university-of-arkansas-rome"
+  },
+  {
+    "title": "Oracle Academy showcases the power of data visualization and honored ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/academy/oracle-academy-showcases-the-power-of-data-visualization-and-honored-with-recognition-at-the-first-international-conference-on-data-driven-innovations-and-applications-university-of-nigeria-nsukka"
+  },
+  {
+    "title": "Tips to resolve five retail order management challenges",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/tips-to-resolve-five-retail-order-management-challenges"
+  },
+  {
+    "title": "Italian grocer Bennet optimizes its pricing strategy with Oracle Cloud",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/italian-grocer-bennet-optimizes-its-pricing-strategy-with-oracle-cloud"
+  },
+  {
+    "title": "Join us in Vienna at the Oracle Retail Industry Forum 2023",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/join-us-in-vienna-at-the-oracle-retail-industry-forum-2023"
+  },
+  {
+    "title": "Flink: Online grocery takes the fast lane to digital transformation",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/flink-online-grocery-takes-the-fast-lane-to-digital-transformation"
+  },
+  {
+    "title": "Dollar General: Success without borders, market expansion at speed",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/dollar-general-success-without-borders-market-expansion-at-speed"
+  },
+  {
+    "title": "Ulta Beauty: Putting polish on the customer experience",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/ulta-beauty-putting-polish-on-the-customer-experience"
+  },
+  {
+    "title": "Fireside Chat: WH Smith North America Soars and Scales with Oracle ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/fireside-chat-wh-smith-north-america"
+  },
+  {
+    "title": "A timeless legacy: Rogers & Hollands to shares gems of success",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/rogers-hollands-executive-oracle-retail-cross-talk"
+  },
+  {
+    "title": "Safety report points to a data-driven future",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/safety-data-driven-future"
+  },
+  {
+    "title": "How to select a construction payment management solution: Attracting ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/construction-payment-management-trade-partners"
+  },
+  {
+    "title": "Predictive-based safety provides a new approach as jobsites struggle ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/predictive-based-safety"
+  },
+  {
+    "title": "Oracle Textura helps Moss hone its competitive edge with streamlined ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/moss-streamlined-payment-management"
+  },
+  {
+    "title": "Avista emphasizes project controls as capital budget and project ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/project-controls-capital-budget"
+  },
+  {
+    "title": "How contractors are using AI and analytics to reduce risk and improve ...",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/ai-analytics-improve-safety"
+  },
+  {
+    "title": "K L Masters builds its new company with the help of Oracle Textura",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/masters-builds-oracle-textura"
+  },
+  {
+    "title": "What it means to be data-driven in construction safety",
+    "date": "N/A",
+    "link": "https://blogs.oracle.com/post/data-construction-safety"
+  }
+]

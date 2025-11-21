@@ -1,0 +1,66 @@
+[
+  {
+    "title": "From authentication to orchestration: Building smarter fraud defenses for banks",
+    "date": "November 18, 2025",
+    "link": "https://www.ibm.com/think/insights/building-smarter-fraud-defenses-banks",
+    "description": "2FA strengthens account security, but it is most effective when orchestrated within a broader fraud prevention strategy.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "Agents that scale versus agents that stall in financial services",
+    "date": "November 18, 2025",
+    "link": "https://www.ibm.com/think/insights/data-matters/data-ai-agents-finance",
+    "description": "Agentic AI in finance requires trusted data, strong governance and contextual\nmetadata. Discover how to scale agents that accelerate decisions and reduce risk.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "Agents that scale versus agents that stall",
+    "date": "November 18, 2025",
+    "link": "https://www.ibm.com/think/insights/data-matters/data-ai-agents-government",
+    "description": "Agentic AI in government requires trusted data, strong governance and contextual metadata. Learn how to scale agents that improve decisions, reduce risk and serve the mission.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "The CIO’s guide to Microsoft application management with agentic AI",
+    "date": "November 13, 2025",
+    "link": "https://www.ibm.com/think/insights/cio-guide-microsoft-application-management-agentic-ai",
+    "description": "CIOs are reimagining Microsoft AMS as a self-optimizing, always-on ecosystem that learns as it runs.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "What data leaders need to know from the Cost of a Data Breach Report 2025",
+    "date": "November 12, 2025",
+    "link": "https://www.ibm.com/think/insights/data-matters/cost-of-a-data-breach",
+    "description": "N/A",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "3 ways generative AI is revolutionizing SAP testing to boost quality and efficiency",
+    "date": "November 7, 2025",
+    "link": "https://www.ibm.com/think/insights/3-way-gen-ai-is-revolutionizing-sap-testing",
+    "description": "Generative AI is set to transform the SAP testing process.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "Bridging the data engineering skills gap: Build data pipelines with agents, SDKs and automation",
+    "date": "November 7, 2025",
+    "link": "https://www.ibm.com/think/insights/bridging-data-engineering-skills-gap",
+    "description": "IBM watsonx.data integration represents a new model: intelligent, flexible and inclusive by design.",
+    "format": "Insights",
+    "tags": []
+  },
+  {
+    "title": "A critical wake-up call: Overcoming cloning and surveillance risks from eSIM vulnerability",
+    "date": "November 6, 2025",
+    "link": "https://www.ibm.com/think/insights/critical-wake-up-call-e-sim-vulnerability",
+    "description": "Strengthening security of eSIM and eUICC technologies is is vital to the resilience and reliability of the global communications ecosystem.",
+    "format": "Insights",
+    "tags": []
+  }
+]

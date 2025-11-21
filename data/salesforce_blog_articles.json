@@ -1,0 +1,141 @@
+[
+  {
+    "title": "How Conversation Design Differs from Conversational UI",
+    "date": "2025-11-19",
+    "link": "https://www.salesforce.com/blog/conversation-design-and-conversational-ui/",
+    "authors": [
+      "Niki Bamford",
+      "Nic Dimond"
+    ],
+    "excerpt": "Understanding how both concepts come together can help you create better AI experiences.",
+    "topics": [
+      "Agentic AI",
+      "Conversation Design",
+      "Design"
+    ]
+  },
+  {
+    "title": "Today’s Hottest Role: Forward Deployed Engineer",
+    "date": "2025-11-19",
+    "link": "https://www.salesforce.com/blog/forward-deployed-engineer/",
+    "authors": [
+      "Laura Hilgers"
+    ],
+    "excerpt": "FDEs — part personal tech guru, business consultant, and hand-holder — can make or break your AI agent launch.",
+    "topics": [
+      "Agentforce",
+      "Agentic AI",
+      "Customer Success"
+    ]
+  },
+  {
+    "title": "Don’t Just Adopt AI Tools — Adapt to AI Work",
+    "date": "2025-11-19",
+    "link": "https://www.salesforce.com/blog/adapt-to-ai-work/",
+    "authors": [
+      "Jonathan Dien"
+    ],
+    "excerpt": "Bringing AI into your organization means evolving your workflows, rethinking your decision-making and creating new collaborative systems. Here’s how to build your strategy.",
+    "topics": [
+      "Agentic AI",
+      "CIO",
+      "Data Activation"
+    ]
+  },
+  {
+    "title": "How To Promote Your Online Store With Zero Budget",
+    "date": "2025-11-19",
+    "link": "https://www.salesforce.com/blog/market-your-digital-storefront/",
+    "authors": [
+      "Nicole Watson",
+      "Lauren Wallace"
+    ],
+    "excerpt": "Market your ecommerce shop like a boss. No budget? No problem.",
+    "topics": [
+      "B2B Commerce",
+      "Commerce",
+      "ECommerce"
+    ]
+  },
+  {
+    "title": "5 Lessons We Learned Building the World’s First Agentic Enterprise",
+    "date": "2025-11-18",
+    "link": "https://www.salesforce.com/blog/5-lessons-salesforce-agentic-enterprise/",
+    "authors": [
+      "Joe Inzerillo"
+    ],
+    "excerpt": "We’re sharing our blueprint for success, so you can build your company into an agentic enterprise, too.",
+    "topics": [
+      "Agentic AI",
+      "Best Practices",
+      "Customer Relationships"
+    ]
+  },
+  {
+    "title": "What Architects Can Learn from the Data 360 Interoperability Guide",
+    "date": "2025-11-18",
+    "link": "https://www.salesforce.com/blog/what-architects-can-learn-from-the-data-360-interoperability-guide/",
+    "authors": [
+      "Yugandhar Bora",
+      "Jan Fernando"
+    ],
+    "excerpt": "As enterprises adopt multi-cloud and AI-driven architectures, architects need a unified way to move data securely and intelligently across systems.",
+    "topics": [
+      "Architects"
+    ]
+  },
+  {
+    "title": "Two Types of Ontologies Your AI Agents Need to Be Trustworthy",
+    "date": "2025-11-18",
+    "link": "https://www.salesforce.com/blog/structural-and-descriptive-ontology/",
+    "authors": [
+      "Krista Davis"
+    ],
+    "excerpt": "AI requires help to understand information (data) and what it means in the context of your business. Here’s how to bridge that gap.",
+    "topics": [
+      "Agentic AI",
+      "Conversation Design",
+      "Design"
+    ]
+  },
+  {
+    "title": "Tackle the IT Backlog: 3 Ways to Speed Up Your AI Development Life Cycle",
+    "date": "2025-11-18",
+    "link": "https://www.salesforce.com/blog/ai-agent-application-development-best-practice/",
+    "authors": [
+      "Alli Jaeggi"
+    ],
+    "excerpt": "Everyone wants smarter tools, faster answers, and better experiences — and it’s on IT to make it happen. Here how to accelerate the time from idea to innovation.",
+    "topics": [
+      "Developers",
+      "IT"
+    ]
+  },
+  {
+    "title": "How to Make Software Training Easy For Startups",
+    "date": "2025-11-18",
+    "link": "https://www.salesforce.com/blog/software-training-for-startups/",
+    "authors": [
+      "Brett Grossfeld"
+    ],
+    "excerpt": "Learn simple steps to make software training easy for your team, plus a few courses to get started.",
+    "topics": [
+      "Small Business",
+      "Startups",
+      "Trailblazer"
+    ]
+  },
+  {
+    "title": "Voice to Form: Say Hello to the Future of Field Service",
+    "date": "2025-11-17",
+    "link": "https://www.salesforce.com/blog/voice-to-form/",
+    "authors": [
+      "Kevin Ota"
+    ],
+    "excerpt": "Technicians are caught between safety, speed, and accuracy. With Voice to Form, a feature of Agentforce Field Service’s Data Capture, they can have all three.",
+    "topics": [
+      "Field Service",
+      "Agentforce Field Service"
+    ]
+  }
+]
